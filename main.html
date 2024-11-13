@@ -1,0 +1,138 @@
+პრაქტიკული დავალება 01
+ნაწილი 1
+
+გამოიყენეთ მასალა
+საქაღალდეს "nawili_1" დააწერეთ თქვენი  სახელი და გვარი "Giorgi_Kapanadze_davaleba1"
+
+რაც განსაზღვრული არარის, შრის/სვეტის სახელწოდება, შესანახი დირექტორია და ა.შ განსაზღვრეთ თავად. გაყევით GIS ტექნოლოგიის ფაილების მოწესრიგების პრინციპებს.
+ქართული ასოების და სხვა სიმბოლოების გამოყენება გარდა ქვედა ტირისა _ აკრძალულია არქივის, საქაღალდის, ფაილის სახელწოდებებში, ცხრილების სვეტებზე, ცვლადებზე, ფუნქციებზე, კლასებზე, მასივებზე, კორტეჟებზე და ა.შ ❌
+სქრინშოთები > > > (მთლიან ეკრანზე სურათები ამოჭერით Snipping Tool - ის დახმარებით)
+საკლასო ოთახში ატვირთეთ მხოლოდ ეკრანზე ამოჭრილი სურათები *საუნივერსიტეტო კომპიუტერზე იმუშავეთ  C:\Users\Public\ ან  C:\Users\Public\Documents საქაღალდეში
+
+https://sites.google.com/search/gisgeo?query=%E1%83%97%E1%83%94%E1%83%9B%E1%83%90&scope=site&showTabs=false&authuser=0
+
+საკითხები
+
+PyQGIS დახმარებით შექმენით ახალი შრე სახელწოდებით reg_line, გეომეტრია ხაზი, 32637. შეინახეთ \shp საქაღალდეში.
+მუშა კოდი დაასქრინშოთეთ და შეინახეთ \Raster\screenshot საქაღალდეში
+შემოიტანეთ \shp დან შრე nakveTi1 და წაშალეთ სვეტები BLOCK; WEB_STATUS; ZONE_ID.
+მუშა კოდი დაასქრინშოთეთ და შეინახეთ \Raster\screenshot საქაღალდეში
+დაითვალეთ ფართობი და პერიმეტრი nakveTi1 -  ში.
+მუშა კოდი დაასქრინშოთეთ და შეინახეთ \Raster\screenshot საქაღალდეში
+მოძებნეთ დუბლირებული ნაკვეთები და წაშალეთ nakveTi1 -  ში.
+მუშა კოდი დაასქრინშოთეთ და შეინახეთ \Raster\screenshot საქაღალდეში
+
+ამოხსნა
+nawili_1_1.py
+fn = r'C:\Users\Public\GIS\PyGK\Giorgi_Kapanadze_davaleba1\nawili_1\shp\reg_line.shp'
+layerfield = QgsFields()
+layerfield.append(QgsField('ID', QVariant.Int))
+writer = QgsVectorFileWriter(fn, 'UTF-8', layerfield, QgsWkbTypes.LineString, \
+               QgsCoordinateReferenceSystem('EPSG:32637'), 'ESRI Shapefile')
+
+nawili_1_2.py
+layers = QgsProject.instance().mapLayersByName('nakveTi1')
+layer = layers[0]
+out = r'C:\Users\Public\GIS\PyGK\Giorgi_Kapanadze_davaleba1\nawili_1\shp\nakveTi1_1.shp'
+processing.run("native:deletecolumn", {'INPUT': layer,\
+'COLUMN':['BLOCK', 'WEB_STATUS','ZONE_ID'],'OUTPUT':out})
+
+nawili_1_3.py
+layers = QgsProject.instance().mapLayersByName('nakveTi1')
+layer = layers[0]
+
+pv = layer.dataProvider()
+pv.addAttributes([QgsField('Area_sq_m', QVariant.Double)])
+pv.addAttributes([QgsField('Perimeter', QVariant.Double)])
+
+layer.updateFields()
+expr1 = QgsExpression('area($geometry)')
+expr2 = QgsExpression('perimeter($geometry)')
+cntx = QgsExpressionContext()
+cntx.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(layer))
+with edit(layer):
+
+    for i in layer.getFeatures():
+
+        cntx.setFeature(i)
+
+        i['Area_sq_m'] = expr1.evaluate(cntx)
+
+        i['Perimeter'] = expr2.evaluate(cntx)
+
+        layer.updateFeature(i)
+
+nawili_1_4.py
+layers = QgsProject.instance().mapLayersByName('nakveTi1')
+layer = layers[0]
+output = r'C:\Users\Public\GIS\PyGK\Giorgi_Kapanadze_davaleba1\nawili_1\shp\nakveTi_without_geometry_dublicates.shp'
+processing.run("native:deleteduplicategeometries", {'INPUT':layer,'OUTPUT':output})
+
+
+ნაწილი 2
+
+გამოიყენეთ მასალა
+საქაღალდეს  "nawili_2"  დააწერეთ თქვენი სახელი და გვარი "Giorgi_Kapanadze_davaleba2"
+
+რაც განსაზღვრული არარის, შრის/სვეტის სახელწოდება, შესანახი დირექტორია და ა.შ განსაზღვრეთ თავად. გაყევით GIS ტექნოლოგიის ფაილების მოწესრიგების პრინციპებს.
+ქართული ასოების და სხვა სიმბოლოების გამოყენება გარდა ქვედა ტირისა _ აკრძალულია არქივის, საქაღალდის, ფაილის სახელწოდებებში, ცხრილების სვეტებზე, ცვლადებზე, ფუნქციებზე, კლასებზე, მასივებზე, კორტეჟებზე და ა.შ ❌
+სქრინშოთები > > > (მთლიან ეკრანზე სურათები ამოჭერით Snipping Tool - ის დახმარებით)
+საკლასო ოთახში ატვირთეთ მხოლოდ ეკრანზე ამოჭრილი სურათები *საუნივერსიტეტო კომპიუტერზე იმუშავეთ  C:\Users\Public\ ან  C:\Users\Public\Documents საქაღალდეში
+
+საკითხები
+PyQGIS დახმარებით შექმენით ახალი შრე სახელწოდებით points, გეომეტრია წერტილი, 4326. შეინახეთ \shp საქაღალდეში
+მუშა კოდი დაასქრინშოთეთ და შეინახეთ \Raster\screenshot საქაღალდეში
+შემოიტანეთ \shp დან შრე nakveti_poi და წაშალეთ სვეტები ZONE_ID; DANISHNULE.
+მუშა კოდი დაასქრინშოთეთ და შეინახეთ \Raster\screenshot საქაღალდეში
+დაითვალეთ XY კოორდინატები nakveti_poi -  ში.
+მუშა კოდი დაასქრინშოთეთ და შეინახეთ \Raster\screenshot საქაღალდეში
+მოძებნეთ დუბლირებული ნაკვეთები nakveTi1 - ში და წაშალეთ 
+მუშა კოდი დაასქრინშოთეთ და შეინახეთ \Raster\screenshot საქაღალდეში.
+
+
+ამოხსნა
+nawili_1_1.py
+fn = r'C:\Users\Public\GIS\PyGK\Giorgi_Kapanadze_davaleba1\nawili_2\shp\points.shp'
+layerfield = QgsFields()
+layerfield.append(QgsField('ID', QVariant.Int))
+writer = QgsVectorFileWriter(fn, 'UTF-8', layerfield, QgsWkbTypes.Point, \
+               QgsCoordinateReferenceSystem('EPSG:4326'), 'ESRI Shapefile')
+
+nawili_2_2.py
+layers = QgsProject.instance().mapLayersByName('nakveti_poi')
+layer = layers[0]
+out = r'C:\Users\Public\GIS\PyGK\Giorgi_Kapanadze_davaleba1\nawili_2\shp\nakveTi_deleted_fields.shp'
+processing.run("native:deletecolumn", {'INPUT': layer,\
+'COLUMN':['ZONE_ID', 'DANISHNULE'],'OUTPUT':out})
+
+nawili_2_3.py
+layers = QgsProject.instance().mapLayersByName('nakveti_poi')
+layer = layers[0]
+
+pv = layer.dataProvider()
+pv.addAttributes([QgsField('X_coord', QVariant.Double)])
+pv.addAttributes([QgsField('Y_coord', QVariant.Double)])
+
+layer.updateFields()
+expr1 = QgsExpression('x($geometry)')
+expr2 = QgsExpression('y($geometry)')
+cntx = QgsExpressionContext()
+
+cntx.appendScopes(QgsExpressionContextUtils.globalProjectLayerScopes(layer))
+with edit(layer):
+
+    for i in layer.getFeatures():
+
+        cntx.setFeature(i)
+
+        i['X_coord'] = expr1.evaluate(cntx)
+
+        i['Y_coord'] = expr2.evaluate(cntx)
+
+        layer.updateFeature(i)
+
+nawili_2_4.py
+layers = QgsProject.instance().mapLayersByName('nakveTi1')
+layer = layers[0]
+output = r"C:\Users\Public\GIS\PyGK\Giorgi_Kapanadze_davaleba1\nawili_2\shp\nakveTi_deleted_fields.shp"
+processing.run("native:deleteduplicategeometries", {'INPUT':layer,'OUTPUT':output})
